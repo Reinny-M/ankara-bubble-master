@@ -1,0 +1,576 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Text wrapping utilities for AI recommendations */
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.prose-recommendations {
+  max-width: 100%;
+}
+
+.prose-recommendations p {
+  margin-bottom: 0.75rem;
+}
+
+@theme inline {
+  --font-sans: "Inter", "Inter Fallback";
+  --font-mono: "Space Mono", "Space Mono Fallback";
+
+  /* Added dark mode color tokens */
+  /* Light theme with stone/beige backgrounds like Aura template */
+  --color-background: #fafaf9;
+  --color-foreground: #1c1917;
+  --color-card: #ffffff;
+  --color-card-foreground: #1c1917;
+  --color-primary: #ea580c;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f5f5f4;
+  --color-secondary-foreground: #1c1917;
+  --color-muted: #f5f5f4;
+  --color-muted-foreground: #78716c;
+  --color-accent: #ea580c;
+  --color-accent-foreground: #ffffff;
+  --color-border: #e7e5e4;
+  --color-input: #e7e5e4;
+  --color-ring: #ea580c;
+
+  --radius: 0.75rem;
+}
+
+/* Dark mode theme */
+.dark {
+  --color-background: #0a0a0a;
+  --color-foreground: #fafaf9;
+  --color-card: #1c1917;
+  --color-card-foreground: #fafaf9;
+  --color-primary: #ea580c;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #292524;
+  --color-secondary-foreground: #fafaf9;
+  --color-muted: #292524;
+  --color-muted-foreground: #d6d3d1;
+  --color-accent: #ea580c;
+  --color-accent-foreground: #ffffff;
+  --color-border: #292524;
+  --color-input: #292524;
+  --color-ring: #ea580c;
+}
+
+/* Improved dark mode text visibility - Enhanced */
+.dark input::placeholder {
+  color: #f5f5f4 !important;
+}
+
+.dark input {
+  color: #fafaf9 !important;
+}
+
+.dark .text-stone-400 {
+  color: #f5f5f4 !important;
+}
+
+.dark .text-stone-500 {
+  color: #f5f5f4 !important;
+}
+
+.dark .text-stone-600 {
+  color: #f5f5f4 !important;
+}
+
+.dark .placeholder-stone-400 {
+  color: #f5f5f4 !important;
+}
+
+.dark .placeholder-stone-500 {
+  color: #f5f5f4 !important;
+}
+
+.dark .text-stone-700 {
+  color: #fafaf9 !important;
+}
+
+.dark .text-stone-800 {
+  color: #fafaf9 !important;
+}
+
+.dark .text-stone-900 {
+  color: #fafaf9 !important;
+}
+
+/* Button text visibility */
+.dark button {
+  color: #fafaf9 !important;
+}
+
+.dark .text-gray-500 {
+  color: #f5f5f4 !important;
+}
+
+.dark .text-gray-600 {
+  color: #f5f5f4 !important;
+}
+
+.dark .text-gray-700 {
+  color: #fafaf9 !important;
+}
+
+.dark .text-gray-800 {
+  color: #fafaf9 !important;
+}
+
+.dark .text-gray-900 {
+  color: #fafaf9 !important;
+}
+
+/* Select component dark mode */
+.dark [data-radix-select-trigger] {
+  color: #fafaf9 !important;
+  background-color: #1c1917 !important;
+  border-color: #44403c !important;
+}
+
+.dark [data-radix-select-content] {
+  background-color: #1c1917 !important;
+  border-color: #44403c !important;
+}
+
+.dark [data-radix-select-item] {
+  color: #fafaf9 !important;
+}
+
+.dark [data-radix-select-item]:hover {
+  background-color: #292524 !important;
+}
+
+/* Additional Select styling */
+.dark [data-slot="select-trigger"] {
+  color: #fafaf9 !important;
+  background-color: #1c1917 !important;
+  border-color: #44403c !important;
+}
+
+.dark [data-slot="select-content"] {
+  background-color: #1c1917 !important;
+  border-color: #44403c !important;
+  z-index: 9999 !important;
+}
+
+.dark [data-slot="select-item"] {
+  color: #fafaf9 !important;
+}
+
+.dark [data-slot="select-item"]:hover {
+  background-color: #292524 !important;
+}
+
+/* Fix z-index issues for overlays - AGGRESSIVE FIX */
+[data-radix-select-content] {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
+
+[data-radix-select-viewport] {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
+
+[data-radix-select-item] {
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+/* Fix dropdown visibility - AGGRESSIVE */
+[data-radix-select-content] {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+[data-radix-select-item] {
+  color: #111827 !important;
+  background-color: transparent !important;
+  padding: 8px 12px !important;
+}
+
+[data-radix-select-item]:hover {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+[data-radix-select-item][data-highlighted] {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+/* Dark mode dropdown fixes */
+.dark [data-radix-select-content] {
+  background-color: #1c1917 !important;
+  border: 1px solid #44403c !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+.dark [data-radix-select-item] {
+  color: #fafaf9 !important;
+  background-color: transparent !important;
+  padding: 8px 12px !important;
+}
+
+.dark [data-radix-select-item]:hover {
+  background-color: #292524 !important;
+  color: #fafaf9 !important;
+}
+
+.dark [data-radix-select-item][data-highlighted] {
+  background-color: #292524 !important;
+  color: #fafaf9 !important;
+}
+
+/* Label text visibility */
+.dark label {
+  color: #fafaf9 !important;
+}
+
+/* Fix specific text visibility issues */
+.dark .text-blue-600 {
+  color: #60a5fa !important;
+}
+
+.dark .text-blue-700 {
+  color: #93c5fd !important;
+}
+
+.dark .text-blue-800 {
+  color: #bfdbfe !important;
+}
+
+.dark .text-blue-900 {
+  color: #dbeafe !important;
+}
+
+/* Fix all blue text variants */
+.dark .text-blue-500 {
+  color: #93c5fd !important;
+}
+
+.dark .text-blue-400 {
+  color: #93c5fd !important;
+}
+
+/* Fix any other colored text that might be invisible */
+.dark .text-indigo-600,
+.dark .text-indigo-700,
+.dark .text-indigo-800,
+.dark .text-indigo-900 {
+  color: #c7d2fe !important;
+}
+
+.dark .text-purple-600,
+.dark .text-purple-700,
+.dark .text-purple-800,
+.dark .text-purple-900 {
+  color: #ddd6fe !important;
+}
+
+.dark .text-pink-600,
+.dark .text-pink-700,
+.dark .text-pink-800,
+.dark .text-pink-900 {
+  color: #fbcfe8 !important;
+}
+
+/* Card text visibility */
+.dark .card-title {
+  color: #fafaf9 !important;
+}
+
+.dark .card-description {
+  color: #e7e5e4 !important;
+}
+
+/* Fix toast visibility and z-index */
+[data-radix-toast-viewport] {
+  z-index: 99999 !important;
+}
+
+[data-radix-toast-root] {
+  z-index: 99999 !important;
+}
+
+/* Fix all overlay elements z-index - AGGRESSIVE */
+[data-radix-dialog-content],
+[data-radix-dropdown-content],
+[data-radix-popover-content],
+[data-radix-tooltip-content],
+[data-radix-select-content],
+[data-radix-toast-viewport],
+[data-radix-sheet-content] {
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+/* Fix mobile sidebar z-index - AGGRESSIVE */
+[data-radix-sheet-content] {
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+.dark [data-radix-navigation-menu-content] {
+  z-index: 99999 !important;
+}
+
+/* Fix all Radix UI overlays - AGGRESSIVE */
+[data-radix-portal] {
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+/* Fix Sheet component specifically */
+[data-radix-sheet-overlay] {
+  z-index: 99998 !important;
+}
+
+[data-radix-sheet-content] {
+  z-index: 99999 !important;
+  position: relative !important;
+}
+
+/* NUCLEAR OPTION - Force all overlays to be visible */
+*[data-radix-select-content],
+*[data-radix-sheet-content],
+*[data-radix-dialog-content],
+*[data-radix-dropdown-content],
+*[data-radix-popover-content] {
+  z-index: 99999 !important;
+  position: relative !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Force Select items to be visible */
+*[data-radix-select-item] {
+  z-index: 99999 !important;
+  position: relative !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: #111827 !important;
+  background-color: transparent !important;
+}
+
+.dark *[data-radix-select-item] {
+  color: #fafaf9 !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft 0.8s ease-out forwards;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.8s ease-out forwards;
+}
+
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+
+.animation-delay-600 {
+  animation-delay: 0.6s;
+}
+
+.animation-delay-700 {
+  animation-delay: 0.7s;
+}
+
+[class*="animate-"] {
+  opacity: 0;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+/* CRITICAL: Protect our custom components from z-index conflicts */
+.custom-toast {
+  z-index: 999999 !important;
+  position: fixed !important;
+  pointer-events: auto !important;
+}
+
+.custom-toast * {
+  z-index: inherit !important;
+}
+
+/* Ensure modals and dialogs are visible */
+[data-radix-dialog-overlay] {
+  z-index: 99998 !important;
+}
+
+[data-radix-dialog-content] {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
+
+/* Override any conflicting styles for our components */
+.custom-toast-container {
+  z-index: 999999 !important;
+  position: fixed !important;
+}
+
+/* Fix AlertDialog visibility */
+[data-radix-alert-dialog-overlay] {
+  z-index: 99998 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+[data-radix-alert-dialog-content] {
+  z-index: 99999 !important;
+  position: relative !important;
+  background-color: white !important;
+  border-radius: 8px !important;
+  padding: 24px !important;
+  max-width: 500px !important;
+  width: 90% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+}
+
+.dark [data-radix-alert-dialog-content] {
+  background-color: #1f2937 !important;
+  color: white !important;
+}
+
+/* Fix Sheet visibility */
+[data-radix-sheet-overlay] {
+  z-index: 99998 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-radix-sheet-content] {
+  z-index: 99999 !important;
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  height: 100% !important;
+  width: 400px !important;
+  max-width: 90vw !important;
+  background-color: white !important;
+  box-shadow: -4px 0 6px -1px rgba(0, 0, 0, 0.1) !important;
+  transform: translateX(0) !important;
+}
+
+.dark [data-radix-sheet-content] {
+  background-color: #1f2937 !important;
+  color: white !important;
+}
+
+/* Fix Dialog visibility */
+[data-radix-dialog-overlay] {
+  z-index: 99998 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+[data-radix-dialog-content] {
+  z-index: 99999 !important;
+  position: relative !important;
+  background-color: white !important;
+  border-radius: 8px !important;
+  padding: 24px !important;
+  max-width: 500px !important;
+  width: 90% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+}
+
+.dark [data-radix-dialog-content] {
+  background-color: #1f2937 !important;
+  color: white !important;
+}
+
+/* Ensure all Radix overlays are properly positioned */
+[data-radix-portal] {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
