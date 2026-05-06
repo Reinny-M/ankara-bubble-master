@@ -65,7 +65,7 @@ CLERK_WEBHOOK_SECRET=...
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/AmedDavid/ankara-bubble.git
+    git clone https://github.com/Reinny-M/ankara-bubble.git
     cd ankara-bubble
     ```
 
