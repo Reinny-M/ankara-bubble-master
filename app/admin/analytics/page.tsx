@@ -1,4 +1,7 @@
 "use client"
+
+export const dynamic = 'force-dynamic'
+
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
