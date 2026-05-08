@@ -9,13 +9,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CustomModal, CustomModalTrigger } from "@/components/ui/custom-modal"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Star, MapPin, Award, Search } from "lucide-react"
+import { Star, MapPin, Award, Search, ShoppingBag } from "lucide-react"
 import { mockTailors } from "@/lib/mockData"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function TailorsPage() {
   const [selectedTailor, setSelectedTailor] = useState<(typeof mockTailors)[0] | null>(null)
   const [showMessageModal, setShowMessageModal] = useState(false)
+  const router = useRouter()
 
   return (
     <DashboardLayout role="client">
@@ -87,59 +89,68 @@ export default function TailorsPage() {
                       setSelectedTailor(tailor)
                     }}
                   >
-                    <Button
-                      className="flex-1 bg-orange-600 hover:bg-orange-700"
-                    >
+                    <Button className="flex-1 bg-orange-600 hover:bg-orange-700">
                       View Profile
                     </Button>
                   </CustomModalTrigger>
-                  
+
                   <CustomModal
-                    isOpen={selectedTailor?.id === tailor.id}
+                    isOpen={selectedTailor?.id === tailor.id && !showMessageModal}
                     onClose={() => setSelectedTailor(null)}
                     title={tailor.name}
                     description={`Experienced Ankara fashion tailor specializing in ${tailor.specialties.join(", ")}. Known for attention to detail and timely delivery.`}
                   >
-                      <div className="mt-4 space-y-4">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-1">
-                            <Star className="h-5 w-5 fill-orange-500 text-orange-500" />
-                            <span className="text-lg font-semibold text-stone-900 dark:text-stone-100">
-                              {tailor.rating}
-                            </span>
-                          </div>
-                          <span className="text-stone-600 dark:text-stone-400">({tailor.reviews} reviews)</span>
+                    <div className="mt-4 space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1">
+                          <Star className="h-5 w-5 fill-orange-500 text-orange-500" />
+                          <span className="text-lg font-semibold text-stone-900 dark:text-stone-100">
+                            {tailor.rating}
+                          </span>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                          {tailor.specialties.map((specialty) => (
-                            <Badge key={specialty} variant="outline" className="dark:bg-stone-700 dark:text-stone-200 dark:border-stone-600">
-                              {specialty}
-                            </Badge>
-                          ))}
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <div className="text-sm text-stone-600 dark:text-stone-400">Experience</div>
-                            <div className="text-lg font-semibold text-stone-900 dark:text-stone-100">
-                              {tailor.yearsExperience} years
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-sm text-stone-600 dark:text-stone-400">Completed Orders</div>
-                            <div className="text-lg font-semibold text-stone-900 dark:text-stone-100">
-                              {tailor.completedOrders}
-                            </div>
+                        <span className="text-stone-600 dark:text-stone-400">({tailor.reviews} reviews)</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {tailor.specialties.map((specialty) => (
+                          <Badge key={specialty} variant="outline" className="dark:bg-stone-700 dark:text-stone-200 dark:border-stone-600">
+                            {specialty}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-sm text-stone-600 dark:text-stone-400">Experience</div>
+                          <div className="text-lg font-semibold text-stone-900 dark:text-stone-100">
+                            {tailor.yearsExperience} years
                           </div>
                         </div>
                         <div>
-                          <h4 className="mb-2 font-semibold text-stone-900 dark:text-stone-100">About</h4>
-                          <p className="text-stone-600 dark:text-stone-400">
-                            Experienced Ankara fashion tailor specializing in {tailor.specialties.join(", ")}. Known
-                            for attention to detail and timely delivery.
-                          </p>
+                          <div className="text-sm text-stone-600 dark:text-stone-400">Completed Orders</div>
+                          <div className="text-lg font-semibold text-stone-900 dark:text-stone-100">
+                            {tailor.completedOrders}
+                          </div>
                         </div>
                       </div>
+                      <div>
+                        <h4 className="mb-2 font-semibold text-stone-900 dark:text-stone-100">About</h4>
+                        <p className="text-stone-600 dark:text-stone-400">
+                          Experienced Ankara fashion tailor specializing in {tailor.specialties.join(", ")}. Known
+                          for attention to detail and timely delivery.
+                        </p>
+                      </div>
+                      <Button
+                        className="w-full bg-orange-600 hover:bg-orange-700 flex items-center gap-2"
+                        onClick={() => {
+                          setSelectedTailor(null)
+                          router.push(`/client/orders/new?tailorId=${tailor.id}&tailorName=${encodeURIComponent(tailor.name)}`)
+                        }}
+                      >
+                        <ShoppingBag className="h-4 w-4" />
+                        Order Now
+                      </Button>
+                    </div>
                   </CustomModal>
+
                   <CustomModalTrigger
                     onClick={() => {
                       setSelectedTailor(tailor)
@@ -150,7 +161,7 @@ export default function TailorsPage() {
                       Message
                     </Button>
                   </CustomModalTrigger>
-                  
+
                   <CustomModal
                     isOpen={showMessageModal && selectedTailor?.id === tailor.id}
                     onClose={() => {
@@ -160,21 +171,21 @@ export default function TailorsPage() {
                     title={`Send Message to ${tailor.name}`}
                     description="Describe your design requirements and the tailor will get back to you."
                   >
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="subject">Subject</Label>
-                          <Input id="subject" placeholder="e.g., Custom Evening Gown" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="message">Message</Label>
-                          <Textarea
-                            id="message"
-                            placeholder="Describe your design requirements, preferred fabrics, timeline, etc."
-                            rows={5}
-                          />
-                        </div>
-                        <Button className="w-full bg-orange-600 hover:bg-orange-700">Send Message</Button>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="subject">Subject</Label>
+                        <Input id="subject" placeholder="e.g., Custom Evening Gown" />
                       </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="message">Message</Label>
+                        <Textarea
+                          id="message"
+                          placeholder="Describe your design requirements, preferred fabrics, timeline, etc."
+                          rows={5}
+                        />
+                      </div>
+                      <Button className="w-full bg-orange-600 hover:bg-orange-700">Send Message</Button>
+                    </div>
                   </CustomModal>
                 </div>
               </CardContent>
