@@ -60,18 +60,20 @@ export default function NewOrderPage() {
 
     setLoading(true)
     try {
-      // First create a design entry for this order
+      // Create a design entry for this order
       const designId = await createDesign({
         tailorId: tailorId as any,
-        name: form.designDescription.slice(0, 50),
+        title: form.designDescription.slice(0, 50),
         description: form.designDescription,
-        category: form.occasion || "Custom",
+        image: "",
         price: Number(form.budget),
-        fabricType: form.fabric || "Ankara",
-        images: [],
+        category: form.occasion || "Custom",
+        occasion: form.occasion || "General",
+        bodyType: "all",
+        fabric: form.fabric || "Ankara",
       })
 
-      // Then create the order with the design ID
+      // Then create the order
       await createOrder({
         clientId: userData._id,
         tailorId: tailorId as any,
