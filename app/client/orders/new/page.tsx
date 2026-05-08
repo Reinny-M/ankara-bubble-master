@@ -39,6 +39,7 @@ export default function NewOrderPage() {
   })
 
   const userData = useQuery(api.users.getUser, user?.id ? { clerkId: user.id } : "skip")
+  const createDesign = useMutation(api.designs.createDesign)
   const createOrder = useMutation(api.orders.createOrder)
 
   const handleSubmit = async () => {
@@ -52,13 +53,30 @@ export default function NewOrderPage() {
       return
     }
 
+    if (!tailorId) {
+      toast({ title: "Error", description: "No tailor selected.", variant: "destructive" })
+      return
+    }
+
     setLoading(true)
     try {
+      // First create a design entry for this order
+      const designId = await createDesign({
+        tailorId: tailorId as any,
+        name: form.designDescription.slice(0, 50),
+        description: form.designDescription,
+        category: form.occasion || "Custom",
+        price: Number(form.budget),
+        fabricType: form.fabric || "Ankara",
+        images: [],
+      })
+
+      // Then create the order with the design ID
       await createOrder({
         clientId: userData._id,
         tailorId: tailorId as any,
+        designId: designId as any,
         amount: Number(form.budget),
-        requirements: form.designDescription,
         measurements: {
           height: Number(form.height),
           bust: Number(form.bust),
@@ -66,6 +84,7 @@ export default function NewOrderPage() {
           hips: Number(form.hips),
         },
         notes: form.notes,
+        estimatedDelivery: form.deliveryDate ? new Date(form.deliveryDate).getTime() : undefined,
       })
 
       toast({ title: "Order Placed!", description: "Your order has been sent to the tailor." })
