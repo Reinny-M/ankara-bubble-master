@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import OpenAI from 'openai'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,8 +17,6 @@ export async function POST(request: NextRequest) {
     const base64 = Buffer.from(bytes).toString('base64')
     const mediaType = image.type
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
-
     const prompt = `You are an expert body measurement analyst. Analyze this full-body photo and estimate the person's body measurements.
 ${height ? `The person's height is ${height}cm - use this as reference.` : 'Estimate height from proportions.'}
 Return ONLY valid JSON, no other text:
@@ -33,12 +31,30 @@ Return ONLY valid JSON, no other text:
   "suggestions": ["<tip1>", "<tip2>", "<tip3>"]
 }`
 
-    const result = await model.generateContent([
-      { inlineData: { data: base64, mimeType: mediaType } },
-      prompt
-    ])
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      max_tokens: 1000,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:${mediaType};base64,${base64}`,
+                detail: 'high'
+              }
+            },
+            {
+              type: 'text',
+              text: prompt
+            }
+          ]
+        }
+      ]
+    })
 
-    const text = result.response.text()
+    const text = response.choices[0].message.content || ''
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (!jsonMatch) throw new Error('No valid JSON in AI response')
 
@@ -48,7 +64,10 @@ Return ONLY valid JSON, no other text:
   } catch (error) {
     console.error('Error extracting measurements from photo:', error)
     return NextResponse.json(
-      { error: 'Failed to extract measurements', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Failed to extract measurements',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
