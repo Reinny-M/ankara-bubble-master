@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,7 +16,7 @@ import { api } from "@/convex/_generated/api"
 import { useUser } from "@clerk/nextjs"
 import { ShoppingBag, ArrowLeft } from "lucide-react"
 
-export default function NewOrderPage() {
+function NewOrderContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tailorId = searchParams.get("tailorId")
@@ -60,7 +60,6 @@ export default function NewOrderPage() {
 
     setLoading(true)
     try {
-      // Create a design entry for this order
       const designId = await createDesign({
         tailorId: tailorId as any,
         title: form.designDescription.slice(0, 50),
@@ -73,7 +72,6 @@ export default function NewOrderPage() {
         fabric: form.fabric || "Ankara",
       })
 
-      // Then create the order
       await createOrder({
         clientId: userData._id,
         tailorId: tailorId as any,
@@ -232,5 +230,19 @@ export default function NewOrderPage() {
         </Button>
       </div>
     </DashboardLayout>
+  )
+}
+
+export default function NewOrderPage() {
+  return (
+    <Suspense fallback={
+      <DashboardLayout role="client">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+        </div>
+      </DashboardLayout>
+    }>
+      <NewOrderContent />
+    </Suspense>
   )
 }
