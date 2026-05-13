@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const base64 = Buffer.from(bytes).toString('base64')
     const mediaType = image.type
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
     const prompt = `You are an expert body measurement analyst. Analyze this full-body photo and estimate the person's body measurements.
 ${height ? `The person's height is ${height}cm - use this as reference.` : 'Estimate height from proportions.'}
