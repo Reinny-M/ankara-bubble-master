@@ -38,6 +38,73 @@ interface PhotoMeasurements {
   suggestions: string[]
 }
 
+// Dynamic color options per occasion
+const occasionColors: Record<string, { value: string; label: string }[]> = {
+  casual: [
+    { value: "Earth Tones", label: "🟤 Earth Tones" },
+    { value: "Coral", label: "🪸 Coral" },
+    { value: "Turquoise", label: "🩵 Turquoise" },
+    { value: "Yellow", label: "💛 Yellow" },
+    { value: "White", label: "⬜ White" },
+  ],
+  business: [
+    { value: "Navy", label: "🔵 Navy" },
+    { value: "Grey", label: "🩶 Grey" },
+    { value: "Black", label: "⬛ Black" },
+    { value: "Burgundy", label: "🟥 Burgundy" },
+    { value: "White", label: "⬜ White" },
+  ],
+  formal: [
+    { value: "Gold", label: "🟡 Gold" },
+    { value: "Black", label: "⬛ Black" },
+    { value: "Ivory", label: "🤍 Ivory" },
+    { value: "Deep Purple", label: "🟣 Deep Purple" },
+    { value: "Champagne", label: "🥂 Champagne" },
+  ],
+  party: [
+    { value: "Red", label: "❤️ Red" },
+    { value: "Gold", label: "🟡 Gold" },
+    { value: "Electric Blue", label: "💙 Electric Blue" },
+    { value: "Hot Pink", label: "💗 Hot Pink" },
+    { value: "Silver", label: "🩶 Silver" },
+  ],
+  wedding: [
+    { value: "Gold", label: "🟡 Gold" },
+    { value: "Kente Multicolor", label: "🌈 Kente Multicolor" },
+    { value: "Ivory", label: "🤍 Ivory" },
+    { value: "Royal Blue", label: "💙 Royal Blue" },
+    { value: "Emerald", label: "💚 Emerald" },
+  ],
+  church: [
+    { value: "White", label: "⬜ White" },
+    { value: "Pastel Pink", label: "🩷 Pastel Pink" },
+    { value: "Sky Blue", label: "🩵 Sky Blue" },
+    { value: "Lavender", label: "💜 Lavender" },
+    { value: "Cream", label: "🤍 Cream" },
+  ],
+  office: [
+    { value: "Navy", label: "🔵 Navy" },
+    { value: "Charcoal", label: "🩶 Charcoal" },
+    { value: "Teal", label: "🩵 Teal" },
+    { value: "Burgundy", label: "🟥 Burgundy" },
+    { value: "Beige", label: "🟤 Beige" },
+  ],
+  date: [
+    { value: "Red", label: "❤️ Red" },
+    { value: "Blush Pink", label: "🩷 Blush Pink" },
+    { value: "Black", label: "⬛ Black" },
+    { value: "Wine", label: "🍷 Wine" },
+    { value: "Coral", label: "🪸 Coral" },
+  ],
+  "cultural event": [
+    { value: "Kente Multicolor", label: "🌈 Kente Multicolor" },
+    { value: "Orange", label: "🟠 Orange" },
+    { value: "Green", label: "💚 Green" },
+    { value: "Red", label: "❤️ Red" },
+    { value: "Gold", label: "🟡 Gold" },
+  ],
+}
+
 export default function ClientAIStylist() {
   const [step, setStep] = useState<'measurements' | 'preferences' | 'results'>('measurements')
   const [loading, setLoading] = useState(false)
@@ -63,6 +130,16 @@ export default function ClientAIStylist() {
 
   const [analysis, setAnalysis] = useState<MeasurementAnalysis | null>(null)
   const [recommendations, setRecommendations] = useState<StyleRecommendation | null>(null)
+
+  // Derived color options based on selected occasion
+  const colorOptions = preferences.occasion
+    ? (occasionColors[preferences.occasion] ?? [])
+    : []
+
+  // When occasion changes, reset color so stale value is cleared
+  const handleOccasionChange = (value: string) => {
+    setPreferences(prev => ({ ...prev, occasion: value, colorPreferences: '' }))
+  }
 
   const handlePhotoSelect = (file: File) => {
     setPhotoFile(file)
@@ -208,11 +285,17 @@ export default function ClientAIStylist() {
           },
           bodyType: analysis.bodyType, bodyTypeConfidence: 'ai-refined',
           occasion: preferences.occasion,
-          colorPreferences: preferences.colorPreferences ? preferences.colorPreferences.split(',').map(s => s.trim()) : undefined,
-          stylePreferences: preferences.stylePreferences ? preferences.stylePreferences.split(',').map(s => s.trim()) : undefined,
+          colorPreferences: preferences.colorPreferences
+            ? preferences.colorPreferences.split(',').map(s => s.trim())
+            : undefined,
+          stylePreferences: preferences.stylePreferences
+            ? preferences.stylePreferences.split(',').map(s => s.trim())
+            : undefined,
           budget: preferences.budget || undefined,
-          designRecommendations: analysis.recommendations, designCategories: analysis.designCategories,
-          fabricSuggestions: analysis.fabricSuggestions, stylingTips: analysis.stylingTips,
+          designRecommendations: analysis.recommendations,
+          designCategories: analysis.designCategories,
+          fabricSuggestions: analysis.fabricSuggestions,
+          stylingTips: analysis.stylingTips,
           recommendedDesigns: recommendations.designs.map(design => ({ name: design, description: design })),
           colorCombinations: recommendations.colors.map(color => ({ name: color, description: color })),
           accessories: recommendations.accessories.map(accessory => ({ name: accessory, description: accessory })),
@@ -295,7 +378,10 @@ export default function ClientAIStylist() {
                     {photoPreview ? (
                       <div className="relative">
                         <img src={photoPreview} alt="Preview" className="mx-auto max-h-64 rounded-lg object-contain" />
-                        <button onClick={() => { setPhotoPreview(null); setPhotoFile(null); setPhotoMeasurements(null) }} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1">
+                        <button
+                          onClick={() => { setPhotoPreview(null); setPhotoFile(null); setPhotoMeasurements(null) }}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                        >
                           <X className="w-4 h-4" />
                         </button>
                       </div>
@@ -315,13 +401,21 @@ export default function ClientAIStylist() {
                         </div>
                       </div>
                     )}
-                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handlePhotoSelect(e.target.files[0])} />
-                    <input ref={cameraInputRef} type="file" accept="image/*" capture="user" className="hidden" onChange={(e) => e.target.files?.[0] && handlePhotoSelect(e.target.files[0])} />
+                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
+                      onChange={(e) => e.target.files?.[0] && handlePhotoSelect(e.target.files[0])} />
+                    <input ref={cameraInputRef} type="file" accept="image/*" capture="user" className="hidden"
+                      onChange={(e) => e.target.files?.[0] && handlePhotoSelect(e.target.files[0])} />
                   </div>
 
                   <div className="space-y-2">
                     <Label>Your Height (cm) - Optional but improves accuracy</Label>
-                    <Input type="number" value={measurements.height} onChange={(e) => setMeasurements(prev => ({ ...prev, height: e.target.value }))} placeholder="e.g., 165" className="dark:bg-stone-800 dark:text-stone-100" />
+                    <Input
+                      type="number"
+                      value={measurements.height}
+                      onChange={(e) => setMeasurements(prev => ({ ...prev, height: e.target.value }))}
+                      placeholder="e.g., 165"
+                      className="dark:bg-stone-800 dark:text-stone-100"
+                    />
                   </div>
 
                   {photoMeasurements && (
@@ -358,12 +452,16 @@ export default function ClientAIStylist() {
                   <div className="flex gap-3">
                     {photoFile && !photoMeasurements && (
                       <Button onClick={handlePhotoAnalyze} disabled={loading} className="flex-1 bg-orange-600 hover:bg-orange-700">
-                        {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Analyzing Photo...</> : <><Camera className="mr-2 h-4 w-4" />Analyze Photo</>}
+                        {loading
+                          ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Analyzing Photo...</>
+                          : <><Camera className="mr-2 h-4 w-4" />Analyze Photo</>}
                       </Button>
                     )}
                     {photoMeasurements && (
                       <Button onClick={handleMeasurementsSubmit} disabled={loading} className="flex-1">
-                        {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Processing...</> : <><Sparkles className="mr-2 h-4 w-4" />Continue with These Measurements</>}
+                        {loading
+                          ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Processing...</>
+                          : <><Sparkles className="mr-2 h-4 w-4" />Continue with These Measurements</>}
                       </Button>
                     )}
                   </div>
@@ -382,18 +480,30 @@ export default function ClientAIStylist() {
                     ].map(field => (
                       <div key={field.id} className="space-y-2">
                         <Label htmlFor={field.id}>{field.label}</Label>
-                        <Input id={field.id} type="number" value={measurements[field.id as keyof typeof measurements]}
+                        <Input
+                          id={field.id}
+                          type="number"
+                          value={measurements[field.id as keyof typeof measurements]}
                           onChange={(e) => setMeasurements(prev => ({ ...prev, [field.id]: e.target.value }))}
-                          placeholder={field.placeholder} required={field.required}
-                          className="dark:bg-stone-800 dark:text-stone-100 dark:placeholder-stone-400" />
+                          placeholder={field.placeholder}
+                          required={field.required}
+                          className="dark:bg-stone-800 dark:text-stone-100 dark:placeholder-stone-400"
+                        />
                       </div>
                     ))}
                     <div className="space-y-2">
                       <Label>Gender (optional)</Label>
-                      <CustomSelect value={measurements.gender} onValueChange={(value) => setMeasurements(prev => ({ ...prev, gender: value }))}
+                      <CustomSelect
+                        value={measurements.gender}
+                        onValueChange={(value) => setMeasurements(prev => ({ ...prev, gender: value }))}
                         placeholder="Select gender"
-                        options={[{ value: "female", label: "Female" }, { value: "male", label: "Male" }, { value: "non-binary", label: "Non-binary" }]}
-                        className="w-full" />
+                        options={[
+                          { value: "female", label: "Female" },
+                          { value: "male", label: "Male" },
+                          { value: "non-binary", label: "Non-binary" },
+                        ]}
+                        className="w-full"
+                      />
                     </div>
                   </div>
                   {error && (
@@ -402,7 +512,9 @@ export default function ClientAIStylist() {
                     </div>
                   )}
                   <Button type="submit" disabled={loading} className="w-full">
-                    {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Analyzing...</> : <><Sparkles className="mr-2 h-4 w-4" />Analyze My Body Type</>}
+                    {loading
+                      ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Analyzing...</>
+                      : <><Sparkles className="mr-2 h-4 w-4" />Analyze My Body Type</>}
                   </Button>
                 </form>
               )}
@@ -421,44 +533,89 @@ export default function ClientAIStylist() {
             <CardContent>
               <form onSubmit={handlePreferencesSubmit} className="space-y-6">
                 <div className="space-y-4">
+
+                  {/* Occasion */}
                   <div className="space-y-2">
                     <Label>Occasion</Label>
-                    <CustomSelect value={preferences.occasion} onValueChange={(value) => setPreferences(prev => ({ ...prev, occasion: value }))}
+                    <CustomSelect
+                      value={preferences.occasion}
+                      onValueChange={handleOccasionChange}
                       placeholder="Select occasion"
                       options={[
-                        { value: "casual", label: "Casual" }, { value: "business", label: "Business" },
-                        { value: "formal", label: "Formal" }, { value: "party", label: "Party" },
-                        { value: "wedding", label: "Wedding" }, { value: "church", label: "Church" },
-                        { value: "office", label: "Office" }, { value: "date", label: "Date" },
-                        { value: "cultural event", label: "Cultural Event" }
-                      ]} className="w-full" />
+                        { value: "casual", label: "Casual" },
+                        { value: "business", label: "Business" },
+                        { value: "formal", label: "Formal" },
+                        { value: "party", label: "Party" },
+                        { value: "wedding", label: "Wedding" },
+                        { value: "church", label: "Church" },
+                        { value: "office", label: "Office" },
+                        { value: "date", label: "Date" },
+                        { value: "cultural event", label: "Cultural Event" },
+                      ]}
+                      className="w-full"
+                    />
                   </div>
+
+                  {/* Color Preferences — dynamic based on occasion */}
                   <div className="space-y-2">
-                    <Label>Color Preferences (optional)</Label>
-                    <Input value={preferences.colorPreferences} onChange={(e) => setPreferences(prev => ({ ...prev, colorPreferences: e.target.value }))} placeholder="e.g., Gold, Red, Blue" className="dark:bg-stone-800 dark:text-stone-100 dark:placeholder-stone-400" />
+                    <Label>
+                      Color Preferences
+                      {preferences.occasion
+                        ? <span className="ml-2 text-xs text-orange-500 font-normal">(recommended for {preferences.occasion})</span>
+                        : <span className="ml-2 text-xs text-stone-400 font-normal">(select an occasion first)</span>
+                      }
+                    </Label>
+                    <CustomSelect
+                      value={preferences.colorPreferences}
+                      onValueChange={(value) => setPreferences(prev => ({ ...prev, colorPreferences: value }))}
+                      placeholder={preferences.occasion ? "Select a color" : "Select an occasion first"}
+                      options={colorOptions}
+                      className="w-full"
+                    />
                   </div>
+
+                  {/* Style Preferences */}
                   <div className="space-y-2">
                     <Label>Style Preferences (optional)</Label>
-                    <Input value={preferences.stylePreferences} onChange={(e) => setPreferences(prev => ({ ...prev, stylePreferences: e.target.value }))} placeholder="e.g., Modern, Traditional, Bold" className="dark:bg-stone-800 dark:text-stone-100 dark:placeholder-stone-400" />
+                    <Input
+                      value={preferences.stylePreferences}
+                      onChange={(e) => setPreferences(prev => ({ ...prev, stylePreferences: e.target.value }))}
+                      placeholder="e.g., Modern, Traditional, Bold"
+                      className="dark:bg-stone-800 dark:text-stone-100 dark:placeholder-stone-400"
+                    />
                   </div>
+
+                  {/* Budget */}
                   <div className="space-y-2">
                     <Label>Budget (optional)</Label>
-                    <CustomSelect value={preferences.budget} onValueChange={(value) => setPreferences(prev => ({ ...prev, budget: value }))}
+                    <CustomSelect
+                      value={preferences.budget}
+                      onValueChange={(value) => setPreferences(prev => ({ ...prev, budget: value }))}
                       placeholder="Select budget range"
                       options={[
                         { value: "under-5000", label: "Under KES 5,000" },
                         { value: "5000-15000", label: "KES 5,000 - 15,000" },
                         { value: "15000-25000", label: "KES 15,000 - 25,000" },
                         { value: "25000-50000", label: "KES 25,000 - 50,000" },
-                        { value: "over-50000", label: "Over KES 50,000" }
-                      ]} className="w-full" />
+                        { value: "over-50000", label: "Over KES 50,000" },
+                      ]}
+                      className="w-full"
+                    />
                   </div>
                 </div>
-                {error && <div className="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded-lg"><AlertCircle className="h-4 w-4" /><span className="text-sm">{error}</span></div>}
+
+                {error && (
+                  <div className="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded-lg">
+                    <AlertCircle className="h-4 w-4" /><span className="text-sm">{error}</span>
+                  </div>
+                )}
+
                 <div className="flex gap-4">
                   <Button type="button" variant="outline" onClick={() => setStep('measurements')} className="flex-1">Back</Button>
                   <Button type="submit" disabled={loading} className="flex-1">
-                    {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Getting Recommendations...</> : <><Sparkles className="mr-2 h-4 w-4" />Get My Style Recommendations</>}
+                    {loading
+                      ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Getting Recommendations...</>
+                      : <><Sparkles className="mr-2 h-4 w-4" />Get My Style Recommendations</>}
                   </Button>
                 </div>
               </form>
@@ -532,16 +689,25 @@ export default function ClientAIStylist() {
                   <div key={index} className="p-4 border border-stone-200 dark:border-stone-700 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium text-stone-900 dark:text-stone-100">{design}</h4>
-                      <Button size="sm" variant="outline" onClick={() => handleGenerateImage(design)}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleGenerateImage(design)}
                         disabled={imageLoading === design}
-                        className="text-orange-600 border-orange-200 hover:bg-orange-50">
-                        {imageLoading === design ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Sparkles className="w-4 h-4 mr-1" />Generate</>}
+                        className="text-orange-600 border-orange-200 hover:bg-orange-50"
+                      >
+                        {imageLoading === design
+                          ? <Loader2 className="w-4 h-4 animate-spin" />
+                          : <><Sparkles className="w-4 h-4 mr-1" />Generate</>}
                       </Button>
                     </div>
                     {generatedImages[design] && (
-                      <img src={generatedImages[design]} alt={design}
+                      <img
+                        src={generatedImages[design]}
+                        alt={design}
                         className="w-full h-64 object-cover rounded-lg border border-stone-200 dark:border-stone-700 mt-3"
-                        onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                        onError={(e) => { e.currentTarget.style.display = 'none' }}
+                      />
                     )}
                   </div>
                 ))}
@@ -562,7 +728,9 @@ export default function ClientAIStylist() {
                       </Link>
                     )}
                     <Button onClick={handleSaveRecommendation} disabled={loading} className="bg-orange-600 hover:bg-orange-700">
-                      {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : <><CheckCircle className="w-4 h-4 mr-2" />Save Recommendation</>}
+                      {loading
+                        ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</>
+                        : <><CheckCircle className="w-4 h-4 mr-2" />Save Recommendation</>}
                     </Button>
                   </div>
                 </div>
