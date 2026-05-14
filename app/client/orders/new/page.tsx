@@ -1,7 +1,5 @@
 "use client"
-
 export const dynamic = 'force-dynamic'
-
 import { useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
@@ -14,16 +12,15 @@ import { useToast } from "@/components/toast-context"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { useUser } from "@clerk/nextjs"
-import { ShoppingBag, ArrowLeft } from "lucide-react"
+import { ShoppingBag, ArrowLeft, Loader2 } from "lucide-react"
 
 function NewOrderContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tailorId = searchParams.get("tailorId")
   const tailorName = searchParams.get("tailorName") || "Selected Tailor"
-  const { user } = useUser()
+  const { user, isLoaded } = useUser()
   const { toast } = useToast()
-
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
     designDescription: "",
@@ -38,21 +35,24 @@ function NewOrderContent() {
     notes: "",
   })
 
-  const userData = useQuery(api.users.getUser, user?.id ? { clerkId: user.id } : "skip")
+  const userData = useQuery(api.users.getUser, isLoaded && user?.id ? { clerkId: user.id } : "skip")
   const createDesign = useMutation(api.designs.createDesign)
   const createOrder = useMutation(api.orders.createOrder)
 
   const handleSubmit = async () => {
-    if (!userData?._id) {
+    // userData is undefined while loading, null if not found
+    if (userData === undefined) {
+      toast({ title: "Loading...", description: "Please wait a moment and try again.", variant: "destructive" })
+      return
+    }
+    if (!userData || !userData._id) {
       toast({ title: "Error", description: "User not found. Please log in again.", variant: "destructive" })
       return
     }
-
     if (!form.designDescription || !form.budget || !form.height || !form.bust || !form.waist || !form.hips) {
       toast({ title: "Missing Fields", description: "Please fill in all required fields.", variant: "destructive" })
       return
     }
-
     if (!tailorId) {
       toast({ title: "Error", description: "No tailor selected.", variant: "destructive" })
       return
@@ -71,7 +71,6 @@ function NewOrderContent() {
         bodyType: "all",
         fabric: form.fabric || "Ankara",
       })
-
       await createOrder({
         clientId: userData._id,
         tailorId: tailorId as any,
@@ -86,7 +85,6 @@ function NewOrderContent() {
         notes: form.notes,
         estimatedDelivery: form.deliveryDate ? new Date(form.deliveryDate).getTime() : undefined,
       })
-
       toast({ title: "Order Placed!", description: "Your order has been sent to the tailor." })
       router.push("/client/orders")
     } catch (error) {
@@ -95,6 +93,20 @@ function NewOrderContent() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show loading while user data is being fetched
+  if (!isLoaded || userData === undefined) {
+    return (
+      <DashboardLayout role="client">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-3"></div>
+            <p className="text-stone-500">Loading your account...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (
@@ -225,7 +237,7 @@ function NewOrderContent() {
           onClick={handleSubmit}
           disabled={loading}
         >
-          <ShoppingBag className="h-4 w-4" />
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingBag className="h-4 w-4" />}
           {loading ? "Placing Order..." : "Place Order"}
         </Button>
       </div>
